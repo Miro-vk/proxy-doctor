@@ -1,0 +1,43 @@
+{
+  "name": "steel-proxy-doctor",
+  "version": "0.1.0",
+  "description": "Check a bring-your-own proxy before a Steel session uses it, and explain any failure.",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "node --import tsx --test test/*.test.ts",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "keywords": [
+    "steel",
+    "proxy",
+    "browser-automation",
+    "ai-agents",
+    "diagnostics"
+  ],
+  "author": "Miro Kemaloglu",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3"
+  },
+  "type": "module",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "bin": {
+    "steel-proxy-doctor": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "skill"
+  ],
+  "engines": {
+    "node": ">=18"
+  }
+}
