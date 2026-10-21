@@ -39,5 +39,13 @@
   ],
   "engines": {
     "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Miro-vk/proxy-doctor.git"
+  },
+  "homepage": "https://github.com/Miro-vk/proxy-doctor#readme",
+  "bugs": {
+    "url": "https://github.com/Miro-vk/proxy-doctor/issues"
   }
 }
