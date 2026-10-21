@@ -2,15 +2,17 @@
 
 Check a bring-your-own proxy before a [Steel](https://steel.dev) browser session uses it, and get a plain explanation when it fails.
 
-```
-$ steel-proxy-doctor http://agent:wrong@proxy.example.com:8080
+Real output against a Webshare datacenter proxy with a wrong password (username and IP masked):
 
-steel-proxy-doctor  http://agent:***@proxy.example.com:8080  (checked from this machine)
+```
+$ steel-proxy-doctor 'http://user:wrongpassword@45.38.x.x:6014'
+
+steel-proxy-doctor  http://user:***@45.38.x.x:6014  (checked from this machine)
 
   ✓ parse
-  ✓ dns          14 ms  203.0.113.20
-  ✓ tcp          31 ms
-  ✗ handshake    29 ms
+  ✓ dns           1 ms  45.38.x.x
+  ✓ tcp          91 ms
+  ✗ handshake   224 ms
 
   The proxy rejected the username or password (HTTP 407).
   Wrong input: username/password in useProxy.server
@@ -44,6 +46,20 @@ It needs no Steel API key and sends nothing to Steel.
 | target | Optional: fetches a page you name through the proxy | site blocks the exit IP, provider blocklists the domain |
 
 After the exit-IP rounds it reports whether the proxy is **rotating** (new IP per connection) or **static/sticky**. A rotating proxy passes, but with a warning: a browser opens many connections per page, so one Steel session would show up at a site from several IPs.
+
+## Tested on a real provider
+
+Besides the local test suite, every case below was run against a free Webshare datacenter proxy:
+
+| Case | Result |
+| --- | --- |
+| Correct URL over HTTP | Passed; same exit IP on all 3 tunnels, reported as static |
+| Same proxy as `socks5://` | Passed (Webshare serves both protocols on one port) |
+| Wrong password | Failed at `handshake` with the 407 explanation above |
+| Wrong port | Failed at `tcp`: connection refused, points at the port |
+| `--target https://www.amazon.com` | Passed with a warning: Amazon answered `202` with an empty body, its usual reply to suspected bots |
+
+That last row found a gap. The first version reported Amazon's `202` as a plain pass, because a 2xx looked like success. A `GET` has nothing to "accept", so the target check now warns on `202` and also recognizes Amazon's Robot Check page.
 
 ## Usage
 
