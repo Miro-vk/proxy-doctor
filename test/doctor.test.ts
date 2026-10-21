@@ -174,6 +174,18 @@ describe('HTTP CONNECT proxies', () => {
     assert.equal(r.error?.owner, 'target_site');
   });
 
+  test('202 from a GET is flagged as a likely soft block', async () => {
+    const r = await diagnose(`http://127.0.0.1:${open.port}`, fast({ rounds: 1, target: `http://127.0.0.1:${echo.port}/soft-block` }));
+    assert.equal(r.ok, true);
+    assert.ok(r.warnings.some((w) => w.code === 'target_soft_block'));
+  });
+
+  test('Amazon robot check page is recognized', async () => {
+    const r = await diagnose(`http://127.0.0.1:${open.port}`, fast({ rounds: 1, target: `http://127.0.0.1:${echo.port}/robot-check` }));
+    assert.equal(r.ok, true);
+    assert.ok(r.warnings.some((w) => w.code === 'target_challenge' && /Amazon bot check/.test(w.message)));
+  });
+
   test('bot challenge is a warning, not a failure', async () => {
     const r = await diagnose(`http://127.0.0.1:${open.port}`, fast({ rounds: 1, target: `http://127.0.0.1:${echo.port}/challenge` }));
     assert.equal(r.ok, true);

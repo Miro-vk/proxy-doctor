@@ -26,6 +26,7 @@ const CHALLENGE_MARKERS: [RegExp, string][] = [
   [/cf-chl|challenge-platform|Just a moment\.\.\./i, 'Cloudflare challenge'],
   [/px-captcha|perimeterx/i, 'PerimeterX challenge'],
   [/datadome/i, 'DataDome challenge'],
+  [/validateCaptcha|<title>\s*Robot Check/i, 'Amazon bot check'],
   [/g-recaptcha|hcaptcha|captcha/i, 'CAPTCHA'],
 ];
 
@@ -219,6 +220,15 @@ async function checkTarget(
   if ([401, 403, 407, 429, 451].includes(res.status)) {
     done(false, `HTTP ${res.status}`);
     return { code: 'target_blocked', detail: `HTTP ${res.status}` };
+  }
+  if (res.status === 202) {
+    // A GET has nothing to "accept"; sites such as Amazon answer suspected bots with 202 and an interstitial.
+    done(true, `HTTP 202, ${res.body.length} bytes`);
+    report.warnings.push({
+      code: 'target_soft_block',
+      message: `${target.host} answered 202 Accepted (${res.body.length} bytes) instead of 200. Some sites, Amazon among them, send this to suspected bots in place of the real page. The IP isn't banned outright, but try the page in a Steel session before relying on this proxy.`,
+    });
+    return null;
   }
   done(true, `HTTP ${res.status}`);
   return null;

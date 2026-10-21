@@ -138,7 +138,7 @@ if (!report.ok) console.log(report.error.fix);
 
 ```bash
 npm install
-npm test       # 31 tests against local HTTP CONNECT and SOCKS5 proxies that fail on purpose
+npm test       # 33 tests against local HTTP CONNECT and SOCKS5 proxies that fail on purpose
 npm run build
 ```
 

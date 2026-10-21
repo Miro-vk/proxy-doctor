@@ -68,6 +68,14 @@ export function startEcho(): Promise<Running> {
       res.writeHead(503, { 'content-type': 'text/html' });
       return res.end('<title>Just a moment...</title><script src="/cdn-cgi/challenge-platform/x.js"></script>');
     }
+    if (req.url === '/soft-block') {
+      res.writeHead(202, { 'content-type': 'text/html' });
+      return res.end('<html><body></body></html>');
+    }
+    if (req.url === '/robot-check') {
+      res.writeHead(200, { 'content-type': 'text/html' });
+      return res.end('<title>Robot Check</title><form action="/errors/validateCaptcha"></form>');
+    }
     if (req.url === '/json') {
       res.writeHead(200, { 'content-type': 'application/json' });
       return res.end(JSON.stringify({ ip: req.socket.remoteAddress?.replace('::ffff:', '') }));
